@@ -28,13 +28,33 @@
       "title": "Favorites",
       "description": "",
       "mode": "view"
+    },
+    {
+      "name": "whoIsOnCall",
+      "title": "Who is on call",
+      "description": "",
+      "mode": "view"
+    },
+    {
+      "name": "addOverride",
+      "title": "Add an override",
+      "description": "",
+      "mode": "view"
+    },
+    {
+      "name": "openIncidents",
+      "title": "Open Incidents",
+      "subtitle": "Spike",
+      "description": "See all open incidents",
+      "mode": "menu-bar"
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.83.2",
     "@raycast/utils": "^1.17.0",
     "axios": "^1.7.7",
-    "crypto-js": "^4.2.0"
+    "crypto-js": "^4.2.0",
+    "moment-timezone": "^0.5.46"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",

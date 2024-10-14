@@ -1,4 +1,5 @@
 import { OAuth } from "@raycast/api";
+import { getUser } from "../api/users";
 import config from "../config";
 const clientId = "81haf7j73410.c927aa87bagc";
 
@@ -41,4 +42,8 @@ export async function logout(): Promise<void> {
 export async function getToken(): Promise<string> {
   const tokenSet = await client.getTokens();
   return tokenSet && tokenSet.accessToken ? tokenSet.accessToken : "";
+}
+
+export async function getUser(): Promise<any> {
+  return await getUser();
 }

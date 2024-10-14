@@ -22,7 +22,13 @@ export const getUser = async () => {
   }
 };
 
+export const getTeamsUsers = async () => {
+  const response = await apiClient.get("/orgs/team/members")
+  return response.data;
+};
+
 export default {
   getFavorites,
   getUser,
+  getTeamsUsers,
 };

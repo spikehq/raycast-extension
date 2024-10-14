@@ -1,6 +1,7 @@
-import { ActionPanel, List, Action, Icon, Color } from "@raycast/api";
+import { ActionPanel, List, Action, Icon, Color, showToast, Toast } from "@raycast/api";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import api from "./api";
+import React from "react";
 
 interface Incident {
   _id: string;
@@ -10,20 +11,20 @@ interface Incident {
   status: "NACK" | "ACK" | "RES";
 }
 
-const tagProps = {
+const tagProps: Record<Incident["status"], { value: string; color: Color }> = {
   NACK: { value: "Triggered", color: Color.Red },
   ACK: { value: "Acknowledged", color: Color.Blue },
   RES: { value: "Resolved", color: Color.PrimaryText },
 };
 
-function IncidentListItem({
+const IncidentListItem = React.memo(function IncidentListItem({
   incident,
   onAcknowledge,
   onResolve,
 }: {
   incident: Incident;
-  onAcknowledge: (incident: Incident) => void;
-  onResolve: (incident: Incident) => void;
+  onAcknowledge: (incident: Incident) => Promise<void>;
+  onResolve: (incident: Incident) => Promise<void>;
 }) {
   return (
     <List.Item
@@ -34,19 +35,13 @@ function IncidentListItem({
         <ActionPanel>
           <Action.OpenInBrowser title="Open Incident" url={`https://app.spike.sh/incidents/${incident.counterId}`} />
           <Action
-            shortcut={{
-              modifiers: ["cmd", "shift"],
-              key: "a",
-            }}
+            shortcut={{ modifiers: ["cmd", "shift"], key: "a" }}
             title="Acknowledge"
             icon={Icon.Circle}
             onAction={() => onAcknowledge(incident)}
           />
           <Action
-            shortcut={{
-              modifiers: ["cmd"],
-              key: "r",
-            }}
+            shortcut={{ modifiers: ["cmd"], key: "r" }}
             title="Resolve"
             icon={Icon.Checkmark}
             onAction={() => onResolve(incident)}
@@ -55,17 +50,29 @@ function IncidentListItem({
       }
     />
   );
-}
+});
 
 export default function Command() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchIncidents = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.incidents.getOpenIncidents();
+      setIncidents([...response.NACK_Incidents, ...response.ACK_Incidents]);
+    } catch (err) {
+      console.error("Error fetching incidents:", err);
+      setError("Failed to fetch incidents. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    api.incidents.getOpenIncidents().then((response) => setIncidents([
-      ...response.NACK_Incidents,
-      ...response.ACK_Incidents,
-    ]));
-  }, []);
+    fetchIncidents();
+  }, [fetchIncidents]);
 
   const updateIncidentStatus = useCallback((incident: Incident, newStatus: "ACK" | "RES") => {
     setIncidents((prevIncidents) =>
@@ -75,22 +82,42 @@ export default function Command() {
 
   const acknowledgeIncident = useCallback(
     async (incident: Incident) => {
-      await api.incidents.acknowledgeIncident(incident);
-      updateIncidentStatus(incident, "ACK");
+      try {
+        await api.incidents.acknowledgeIncident(incident);
+        updateIncidentStatus(incident, "ACK");
+        await showToast({ style: Toast.Style.Success, title: "Incident acknowledged" });
+      } catch (err) {
+        console.error("Error acknowledging incident:", err);
+        await showToast({ style: Toast.Style.Failure, title: "Failed to acknowledge incident" });
+      }
     },
     [updateIncidentStatus],
   );
 
   const resolveIncident = useCallback(
     async (incident: Incident) => {
-      await api.incidents.resolveIncident(incident);
-      updateIncidentStatus(incident, "RES");
+      try {
+        await api.incidents.resolveIncident(incident);
+        updateIncidentStatus(incident, "RES");
+        await showToast({ style: Toast.Style.Success, title: "Incident resolved" });
+      } catch (err) {
+        console.error("Error resolving incident:", err);
+        await showToast({ style: Toast.Style.Failure, title: "Failed to resolve incident" });
+      }
     },
     [updateIncidentStatus],
   );
 
   const triggeredIncidents = useMemo(() => incidents.filter((i) => i.status === "NACK"), [incidents]);
   const acknowledgedIncidents = useMemo(() => incidents.filter((i) => i.status === "ACK"), [incidents]);
+
+  if (isLoading) {
+    return <List isLoading={true} />;
+  }
+
+  if (error) {
+    return <List.EmptyView title="Error" description={error} />;
+  }
 
   return (
     <List>

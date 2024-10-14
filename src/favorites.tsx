@@ -1,5 +1,5 @@
-import { ActionPanel, Detail, List, Action, Icon, Color } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { ActionPanel, List, Action, Icon } from "@raycast/api";
+import { useEffect, useState, useMemo } from "react";
 import api from "./api";
 
 interface Favorite {
@@ -12,56 +12,75 @@ interface Favorite {
   counterId?: string;
 }
 
-const getIcon = (entityType: string) => {
-  switch (entityType) {
-    case "Incident":
-      return "incident.png";
-    case "Oncall":
-      return "oncall.png";
-    case "Escalation":
-      return "escalation.png";
-    case "Service":
-      return "service.png";
-    case "Integration":
-      return "integration.png";
-    default:
-      return null;
-  }
+type EntityType = "Incident" | "Oncall" | "Escalation" | "Service" | "Integration";
+
+const iconMap: Record<EntityType, string> = {
+  Incident: "incident.png",
+  Oncall: "oncall.png",
+  Escalation: "escalation.png",
+  Service: "service.png",
+  Integration: "integration.png",
 };
 
-export default function Command() {
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
-  useEffect(() => {
-    async function fetchFavorites() {
-      const response = await api.users.getFavorites();
-      const arrayObject = Object.values(response.favorites);
-      setFavorites(arrayObject);
-    }
-
-    fetchFavorites();
-  }, []);
-  return (
-    <List>
-      <List.Section title="Favorites" subtitle={favorites.length + " items"}>
-        {favorites.map((favorite) => (
-          <FavoriteItem key={favorite.entityId} favorite={favorite} />
-        ))}
-      </List.Section>
-    </List>
-  );
-}
+const getIcon = (entityType: string): string | Icon => {
+  return (iconMap[entityType as EntityType] as string) || Icon.Star;
+};
 
 function FavoriteItem({ favorite }: { favorite: Favorite }) {
   return (
     <List.Item
       title={favorite.name}
-      subtitle={favorite.counterId ? favorite.counterId : undefined}
-      icon={getIcon(favorite.entityType) || Icon.Star}
+      subtitle={favorite.counterId}
+      icon={getIcon(favorite.entityType)}
       actions={
         <ActionPanel>
           <Action.OpenInBrowser title="Open favorite" url={`https://app.spike.sh${favorite.url}`} />
         </ActionPanel>
       }
     />
+  );
+}
+
+export default function Command() {
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchFavorites() {
+      try {
+        setIsLoading(true);
+        const response = await api.users.getFavorites();
+        setFavorites(Object.values(response.favorites));
+      } catch (err) {
+        setError("Failed to fetch favorites. Please try again.");
+        console.error("Error fetching favorites:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchFavorites();
+  }, []);
+
+  const favoriteItems = useMemo(
+    () => favorites.map((favorite) => <FavoriteItem key={favorite.entityId} favorite={favorite} />),
+    [favorites],
+  );
+
+  if (isLoading) {
+    return <List isLoading={true} />;
+  }
+
+  if (error) {
+    return <List.EmptyView title="Error" description={error} />;
+  }
+
+  return (
+    <List>
+      <List.Section title="Favorites" subtitle={`${favorites.length} items`}>
+        {favoriteItems}
+      </List.Section>
+    </List>
   );
 }
