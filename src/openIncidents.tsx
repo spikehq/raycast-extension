@@ -35,9 +35,8 @@ export default function Command() {
         <MenuBarExtra.Item
           key={index}
           title={`[${incident.counterId}] ${incident.message}` || `[${incident.counterId}] Parsing failed`}
-          icon={"incident.png"}
           onAction={() => {
-            open('https://app.spike.sh/incidents/' + incident.counterId);
+            open("https://app.spike.sh/incidents/" + incident.counterId);
           }}
         />
       ))}
@@ -46,9 +45,8 @@ export default function Command() {
         <MenuBarExtra.Item
           key={index}
           title={`[${incident.counterId}] ${incident.message}` || `[${incident.counterId}] Parsing failed`}
-          icon={"incident.png"}
           onAction={() => {
-            open('https://app.spike.sh/incidents/' + incident.counterId);
+            open("https://app.spike.sh/incidents/" + incident.counterId);
           }}
         />
       ))}
