@@ -17,6 +17,7 @@ const tagProps: Record<Incident["status"], { value: string; color: Color }> = {
   ACK: { value: "Acknowledged", color: Color.Blue },
   RES: { value: "Resolved", color: Color.PrimaryText },
 };
+const getIcon = (path: string): string => `https://cdn.spike.sh/icons/${path}`;
 
 const IncidentListItem = React.memo(function IncidentListItem({
   incident,
@@ -27,11 +28,28 @@ const IncidentListItem = React.memo(function IncidentListItem({
   onAcknowledge: (incident: Incident) => Promise<void>;
   onResolve: (incident: Incident) => Promise<void>;
 }) {
+  const accessories = [];
+  if (incident && incident.groupedIncident && incident.groupedIncident.priority) {
+    accessories.push({
+      icon: { source: getIcon(`${incident.groupedIncident.priority}.png`) },
+      tooltip: incident.groupedIncident.priority.toUpperCase(),
+      text: incident.groupedIncident.priority.toUpperCase(),
+    });
+  }
+
+  if (incident && incident.groupedIncident && incident.groupedIncident.severity) {
+    accessories.push({
+      icon: { source: getIcon(`${incident.groupedIncident.severity}.png`) },
+      tooltip: incident.groupedIncident.severity.toUpperCase(),
+      text: incident.groupedIncident.severity.toUpperCase(),
+    });
+  }
+
   return (
     <List.Item
       title={incident.message || "Parsing failed"}
       subtitle={incident.counterId}
-      accessories={[{ tag: tagProps[incident.status] }]}
+      accessories={[...accessories, { tag: tagProps[incident.status] }]}
       actions={
         <ActionPanel>
           <Action.Push
