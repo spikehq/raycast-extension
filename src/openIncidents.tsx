@@ -10,7 +10,7 @@ export default function Command() {
   const fetchIncidents = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await api.incidents.getOpenIncidents();
+      const response = await api.incidents.getOpenIncidents(1, 20);
       setIncidents([...response.NACK_Incidents, ...response.ACK_Incidents]);
     } catch (err) {
       console.error("Error fetching incidents:", err);

@@ -23,8 +23,7 @@ export const getIncidents = async (page = 1, perPage = 20) => {
   return response.data;
 };
 
-
-export const getOpenIncidents = async (page = 1, perPage = 20) => {
+export const getOpenIncidents = async (page = 1, perPage = 50) => {
   const user = await getUser();
   const response = await apiClient.post("/incidents/load-incident-table", {
     query: {
@@ -34,10 +33,10 @@ export const getOpenIncidents = async (page = 1, perPage = 20) => {
     queryParams: {
       page,
       perPage,
-    }
+    },
   });
   return response.data;
-}
+};
 
 export const acknowledgeIncident = async (incident: Incident) => {
   const user = await getUser();
@@ -61,9 +60,33 @@ export const resolveIncident = async (incident: Incident) => {
   return response.data;
 };
 
+export const getIncident = async (counterId: string) => {
+  const response = await apiClient.get(`/incidents/${counterId}`);
+  return response.data;
+};
+
+export const setPriority = async (counterIds: string, priority: string) => {
+  const response = await apiClient.post("/incidents/priority/multi", {
+    ids: counterIds,
+    priority,
+  });
+  return response.data;
+};
+
+export const setSeverity = async (counterIds: string, severity: string) => {
+  const response = await apiClient.post("/incidents/severity/multi", {
+    ids: counterIds,
+    severity,
+  });
+  return response.data;
+};
+
 export default {
   getIncidents,
   acknowledgeIncident,
   resolveIncident,
-  getOpenIncidents
+  getOpenIncidents,
+  getIncident,
+  setPriority,
+  setSeverity,
 };

@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import { List, Icon, showToast, Toast } from "@raycast/api";
+import { List, Icon, showToast, Toast, ActionPanel, Action } from "@raycast/api";
 import api from "./api";
 import momentTz from "moment-timezone";
+import OncallViewPage from "./components/OncallViewPage";
 
 interface Oncall {
   _id: string;
@@ -47,6 +48,15 @@ const MyOncalls = () => {
         icon={Icon.Calendar}
         title={shift.oncall.name || "Unknown"}
         accessories={[{ text: `Ends at ${momentTz(shift.end).format("MMM DD, YYYY h:mm A")}` }]}
+        actions={
+          <ActionPanel>
+            <Action.Push
+              title="View Details"
+              icon={Icon.Info}
+              target={<OncallViewPage oncallId={shift.oncall._id} />}
+            />
+          </ActionPanel>
+        }
       />
     ),
     [],

@@ -61,10 +61,24 @@ export const addOverride = async (data: OncallOverride) => {
   return response.data;
 };
 
+export const getOncall = async (id: string) => {
+  const response = await apiClient.get(`/oncall/${id}`);
+  return response.data;
+};
+
+export const getOncallSpectrum = async (id: string, data: object) => {
+  const response = await apiClient.post(`/oncall/${id}/spectrum`, data);
+
+  
+  return response.data;
+};
+
 export default {
   getSchedules,
   getActiveSchedules,
   getMyOncalls,
   allOncalls,
   addOverride,
+  getOncall,
+  getOncallSpectrum,
 };

@@ -2,6 +2,7 @@ import { ActionPanel, List, Action, Icon, Color, showToast, Toast } from "@rayca
 import { useEffect, useState, useMemo, useCallback } from "react";
 import api from "./api";
 import React from "react";
+import IncidentDetailsView from "./components/IncidentViewPage";
 
 interface Incident {
   _id: string;
@@ -28,12 +29,16 @@ const IncidentListItem = React.memo(function IncidentListItem({
 }) {
   return (
     <List.Item
-      title={incident.message}
+      title={incident.message || "Parsing failed"}
       subtitle={incident.counterId}
       accessories={[{ tag: tagProps[incident.status] }]}
       actions={
         <ActionPanel>
-          <Action.OpenInBrowser title="Open Incident" url={`https://app.spike.sh/incidents/${incident.counterId}`} />
+          <Action.Push
+            title="View Details"
+            icon={Icon.Info}
+            target={<IncidentDetailsView counterId={incident.counterId} />}
+          />
           <Action
             shortcut={{ modifiers: ["cmd", "shift"], key: "a" }}
             title="Acknowledge"
@@ -46,6 +51,7 @@ const IncidentListItem = React.memo(function IncidentListItem({
             icon={Icon.Checkmark}
             onAction={() => onResolve(incident)}
           />
+          <Action.OpenInBrowser title="Open Incident" url={`https://app.spike.sh/incidents/${incident.counterId}`} />
         </ActionPanel>
       }
     />
