@@ -49,8 +49,8 @@ const WhoIsOncall = () => {
   }
 
   return (
-    <List navigationTitle="On-Call Status" searchBarPlaceholder="Search user..." isLoading={isLoading}>
-      <List.Section title="On-Call Teams">
+    <List navigationTitle="Current Active On-Call Members" searchBarPlaceholder="Search user..." isLoading={isLoading}>
+      <List.Section title="Current Active On-Call Members">
         {activeShifts.map((shift, index) => (
           <RenderShiftItem key={index} item={shift} />
         ))}

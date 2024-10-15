@@ -53,7 +53,7 @@ const IncidentListItem = React.memo(function IncidentListItem({
       actions={
         <ActionPanel>
           <Action.Push
-            title="View Details"
+            title="Show Details"
             icon={Icon.Info}
             target={<IncidentDetailsView counterId={incident.counterId} />}
           />

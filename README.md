@@ -1,6 +1,7 @@
 # Spike Raycast Extension
 
 ![Spike Logo](./assets/spike-logo.png)
+![Extension](./assets/README.png)
 
 ## Overview
 

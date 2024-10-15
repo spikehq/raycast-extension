@@ -28,7 +28,7 @@ export default function Command() {
   const acknowledgedIncidents = useMemo(() => incidents.filter((i) => i.status === "ACK"), [incidents]);
 
   return (
-    <MenuBarExtra icon={"spike-logo-white.png"} tooltip="Your Pull Requests">
+    <MenuBarExtra icon={"spike-logo-white.png"} tooltip="Open incidents">
       <MenuBarExtra.Item title="Triggered" />
 
       {triggeredIncidents.map((incident, index) => (

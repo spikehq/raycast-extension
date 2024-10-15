@@ -51,7 +51,7 @@ const MyOncalls = () => {
         actions={
           <ActionPanel>
             <Action.Push
-              title="View Details"
+              title="Show Details"
               icon={Icon.Info}
               target={<OncallViewPage oncallId={shift.oncall._id} />}
             />
