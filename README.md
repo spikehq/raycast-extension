@@ -82,7 +82,7 @@ To contribute to this extension:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/spike-sh/raycast-extension.git
+   git clone https://github.com/spikehq/raycast-extension.git
    ```
 2. Install dependencies:
    ```
