@@ -14,38 +14,38 @@
     {
       "name": "incidents",
       "title": "Incidents",
-      "description": "",
+      "description": "Search and discover open incidents",
       "mode": "view"
     },
     {
       "name": "oncall",
       "title": "On Call",
-      "description": "",
+      "description": "Browse your on-call schedules",
       "mode": "view"
     },
     {
       "name": "favorites",
       "title": "Favorites",
-      "description": "",
+      "description": "Quickly access your favorites",
       "mode": "view"
     },
     {
       "name": "whoIsOnCall",
       "title": "Who is on call",
-      "description": "",
+      "description": "Lists every active on-call member",
       "mode": "view"
     },
     {
       "name": "addOverride",
       "title": "Add an override",
-      "description": "",
+      "description": "Add override on any on-call schedule",
       "mode": "view"
     },
     {
       "name": "openIncidents",
       "title": "Open Incidents",
       "subtitle": "Spike",
-      "description": "See all open incidents",
+      "description": "Access open incidents from your menu bar",
       "mode": "menu-bar"
     }
   ],
