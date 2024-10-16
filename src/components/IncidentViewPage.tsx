@@ -115,6 +115,18 @@ export default function Main({ counterId }: { counterId: string }) {
     [incident, groupedIncident, updateGroupedIncident],
   );
 
+  const removeSeverity = useCallback(async () => {
+    if (!incident) return;
+    await api.incidents.removeSeverity([incident.counterId]);
+    updateGroupedIncident(groupedIncident && groupedIncident.priority ? groupedIncident.priority : "", "");
+  }, [incident, groupedIncident, updateGroupedIncident]);
+
+  const removePriority = useCallback(async () => {
+    if (!incident) return;
+    await api.incidents.removePriority([incident.counterId]);
+    updateGroupedIncident("", groupedIncident && groupedIncident.severity ? groupedIncident.severity : "");
+  }, [incident, groupedIncident, updateGroupedIncident]);
+
   const setPriority = useCallback(
     async (priority: string) => {
       if (!incident) return;
@@ -200,7 +212,7 @@ ${JSON.stringify(incident.resMetadata, null, 2)}
 
         <Detail.Metadata.Label title="Triggered at" text={moment(incident.NACK_at).format("MMM DD, YYYY h:mm A")} />
         {incident.status !== "NACK" && incident.ACK_at && (
-          <Detail.Metadata.Label title="Updated At" text={moment(incident.ACK_at).format("MMM DD, YYYY h:mm A")} />
+          <Detail.Metadata.Label title="Acknowledged At" text={moment(incident.ACK_at).format("MMM DD, YYYY h:mm A")} />
         )}
         {incident.status === "RES" && incident.RES_at && (
           <Detail.Metadata.Label title="Resolved At" text={moment(incident.RES_at).format("MMM DD, YYYY h:mm A")} />
@@ -221,7 +233,7 @@ ${JSON.stringify(incident.resMetadata, null, 2)}
           onAction={acknowledgeIncident}
         />
         <Action
-          shortcut={{ modifiers: ["cmd"], key: "r" }}
+          shortcut={{ modifiers: ["cmd", "shift"], key: "r" }}
           title="Resolve"
           icon={Icon.Checkmark}
           onAction={resolveIncident}
@@ -235,6 +247,7 @@ ${JSON.stringify(incident.resMetadata, null, 2)}
               onAction={() => setSeverity(severity.value)}
             />
           ))}
+          <Action icon={Icon.Xmark} key="remove-severity" title="Remove Severity" onAction={() => removeSeverity()} />
         </ActionPanel.Submenu>
         <ActionPanel.Submenu icon={{ source: getIcon("p2.png") }} title="Change Priority">
           {priorities.map((priority) => (
@@ -245,6 +258,7 @@ ${JSON.stringify(incident.resMetadata, null, 2)}
               onAction={() => setPriority(priority.value)}
             />
           ))}
+          <Action icon={Icon.Xmark} key="remove-priority" title="Remove Priority" onAction={() => removePriority()} />
         </ActionPanel.Submenu>
       </ActionPanel>
     );

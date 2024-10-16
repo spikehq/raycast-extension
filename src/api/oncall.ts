@@ -41,10 +41,8 @@ export const getActiveSchedules = async (page = 1, perPage = 20) => {
 };
 
 export const getMyOncalls = async (page = 1, perPage = 20) => {
-  const user = await getUser();
-
-  const response = await apiClient.get(`/oncall/${user._id}/active-shifts`, {
-    params: { page, perPage },
+  const response = await apiClient.get(`/oncall`, {
+    params: { page, perPage, includes: "me" },
   });
   return response.data;
 };
@@ -68,8 +66,11 @@ export const getOncall = async (id: string) => {
 
 export const getOncallSpectrum = async (id: string, data: object) => {
   const response = await apiClient.post(`/oncall/${id}/spectrum`, data);
+  return response.data;
+};
 
-  
+export const amIOncall = async () => {
+  const response = await apiClient.get("/oncall-data");
   return response.data;
 };
 
@@ -81,4 +82,5 @@ export default {
   addOverride,
   getOncall,
   getOncallSpectrum,
+  amIOncall,
 };

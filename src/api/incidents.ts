@@ -1,4 +1,7 @@
 import apiClient from "./apiClient";
+import config from "../config";
+import * as auth from "../auth";
+import axios from "axios";
 import { getUser } from "./users";
 
 interface Incident {
@@ -23,7 +26,7 @@ export const getIncidents = async (page = 1, perPage = 20) => {
   return response.data;
 };
 
-export const getOpenIncidents = async (page = 1, perPage = 50) => {
+export const getOpenIncidents = async (page = 1, perPage = 20) => {
   const user = await getUser();
   const response = await apiClient.post("/incidents/load-incident-table", {
     query: {
@@ -81,6 +84,42 @@ export const setSeverity = async (counterIds: string, severity: string) => {
   return response.data;
 };
 
+export const removePriority = async (counterIds: string) => {
+  const token = await auth.getToken();
+  const options = {
+    url: `${config.api}/incidents/priority/remove/multi`,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      ids: counterIds,
+    },
+  };
+
+  const response = await axios(options);
+  return response.data;
+};
+
+export const removeSeverity = async (counterIds: string) => {
+  const token = await auth.getToken();
+  const options = {
+    url: `${config.api}/incidents/severity/remove/multi`,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      ids: counterIds,
+    },
+  };
+
+  const response = await axios(options);
+  return response.data;
+};
+
 export default {
   getIncidents,
   acknowledgeIncident,
@@ -89,4 +128,6 @@ export default {
   getIncident,
   setPriority,
   setSeverity,
+  removePriority,
+  removeSeverity,
 };

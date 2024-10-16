@@ -27,6 +27,8 @@ export default function Command() {
   const triggeredIncidents = useMemo(() => incidents.filter((i) => i.status === "NACK"), [incidents]);
   const acknowledgedIncidents = useMemo(() => incidents.filter((i) => i.status === "ACK"), [incidents]);
 
+  const truncate = (str: string, n: number) => str && str.length > n ? str.substring(0, n - 1) + "..." : str;
+
   return (
     <MenuBarExtra icon={"spike-logo-white.png"} tooltip="Open incidents">
       <MenuBarExtra.Item title="Triggered" />
@@ -34,7 +36,7 @@ export default function Command() {
       {triggeredIncidents.map((incident, index) => (
         <MenuBarExtra.Item
           key={index}
-          title={`[${incident.counterId}] ${incident.message}` || `[${incident.counterId}] Parsing failed`}
+          title={`[${incident.counterId}] ${truncate(incident.message, 50)}` || `[${incident.counterId}] Parsing failed`}
           onAction={() => {
             open("https://app.spike.sh/incidents/" + incident.counterId);
           }}
@@ -44,7 +46,7 @@ export default function Command() {
       {acknowledgedIncidents.map((incident, index) => (
         <MenuBarExtra.Item
           key={index}
-          title={`[${incident.counterId}] ${incident.message}` || `[${incident.counterId}] Parsing failed`}
+          title={`[${incident.counterId}] ${truncate(incident.message, 50)}` || `[${incident.counterId}] Parsing failed`}
           onAction={() => {
             open("https://app.spike.sh/incidents/" + incident.counterId);
           }}
