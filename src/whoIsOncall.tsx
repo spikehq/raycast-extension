@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import { List, Icon, showToast, Toast } from "@raycast/api";
+import { List, Icon, showToast, Toast, ActionPanel, Action } from "@raycast/api";
 import api from "./api";
+import OncallViewPage from "./components/OncallViewPage";
+import AddOverride from "./addOverride";
 
 const WhoIsOncall = () => {
   const [activeShifts, setActiveShifts] = useState([]);
@@ -39,6 +41,21 @@ const WhoIsOncall = () => {
         title={`${shift.user.firstName} ${shift.user.lastName}`}
         subtitle={shift.user.email}
         accessories={[{ text: shift.oncall.name || "Unknown" }]}
+        keywords={[
+          `${shift.user.firstName} ${shift.user.lastName}` || "",
+          shift.user.email || "",
+          shift.oncall.name || "",
+        ]}
+        actions={
+          <ActionPanel>
+            <Action.Push
+              title="Show Details"
+              icon={Icon.Info}
+              target={<OncallViewPage oncallId={shift.oncall._id} />}
+            />
+            <Action.Push title="Add Override" icon={Icon.Person} target={<AddOverride oncallId={shift.oncall._id} />} />
+          </ActionPanel>
+        }
       />
     ),
     [],

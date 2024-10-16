@@ -14,10 +14,10 @@ interface Oncall {
   name: string;
 }
 
-export default function Command() {
+export default function Command({ oncallId }: { oncallId: string }) {
   const { pop } = useNavigation();
   const [formState, setFormState] = useState({
-    oncall: "",
+    oncall: oncallId || "",
     user: "",
     desc: "",
     startDate: moment().toDate(),

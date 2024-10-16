@@ -74,6 +74,11 @@ export const amIOncall = async () => {
   return response.data;
 };
 
+export const getWhoIsOncallNext = async (oncallId: string) => {
+  const response = await apiClient.get(`/oncall/${oncallId}/who-is-on-call-next`);
+  return response.data;
+};
+
 export default {
   getSchedules,
   getActiveSchedules,
@@ -83,4 +88,5 @@ export default {
   getOncall,
   getOncallSpectrum,
   amIOncall,
+  getWhoIsOncallNext,
 };

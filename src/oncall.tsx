@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { List, Icon, showToast, Toast, ActionPanel, Action, Color } from "@raycast/api";
 import api from "./api";
 import OncallViewPage from "./components/OncallViewPage";
+import AddOverride from "./addOverride";
 import moment from "moment-timezone";
 
 interface Oncall {
@@ -68,7 +69,7 @@ const MyOncalls = () => {
       return (
         <List.Item
           icon={Icon.Calendar}
-          keywords={[oncall.name, oncall.usernameOfOnCallPerson]}
+          keywords={[oncall.name || "", oncall.usernameOfOnCallPerson || ""]}
           title={oncall.name || "Unknown"}
           subtitle={isMine && activeShift ? `Ends at ${moment(activeShift.end).format("h:mm A, Do MMMM")}` : ""}
           accessories={[
@@ -84,6 +85,7 @@ const MyOncalls = () => {
           actions={
             <ActionPanel>
               <Action.Push title="Show Details" icon={Icon.Info} target={<OncallViewPage oncallId={oncall._id} />} />
+              <Action.Push title="Add Override" icon={Icon.Person} target={<AddOverride oncallId={oncall._id} />} />
             </ActionPanel>
           }
         />

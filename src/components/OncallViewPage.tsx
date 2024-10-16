@@ -14,6 +14,7 @@ export default function OncallViewPage({ oncallId }: { oncallId: string }) {
   const [spectrum, setSpectrum] = useState<Shift[]>([]);
   const [oncall, setOncall] = useState<any | null>(null);
   const [activeShift, setActiveShift] = useState<any | null>(null);
+  const [nextOncallUser, setNextOncallUser] = useState<any | null>(null);
 
   const shiftsDividedByDay = useMemo(() => {
     return spectrum.reduce((acc: Record<string, Shift[]>, shift) => {
@@ -55,6 +56,9 @@ ${shifts.map(createLayerMarkdown).join("\n")}
         });
 
         const oncallResponse = await api.oncall.getOncall(oncallId);
+        const nextOncallResponse = await api.oncall.getWhoIsOncallNext(oncallId);
+
+        setNextOncallUser(nextOncallResponse.nextShift);
         setActiveShift(oncallResponse.activeShift);
         setOncall(oncallResponse.oncall);
         setSpectrum(response.spectrum);
@@ -71,13 +75,25 @@ ${shifts.map(createLayerMarkdown).join("\n")}
     return (
       <Detail.Metadata>
         <Detail.Metadata.TagList title="Current on-call">
-          <Detail.Metadata.TagList.Item color={Color.Green} text={`${activeShift.user.firstName} ${activeShift.user.lastName}`} />
+          <Detail.Metadata.TagList.Item
+            color={Color.Green}
+            text={`${activeShift.user.firstName} ${activeShift.user.lastName}`}
+          />
         </Detail.Metadata.TagList>
-        <Detail.Metadata.Label title="Members" text={`${oncall.users.length} ${oncall.users.length === 1 ? "member" : "members"}`} />
-        <Detail.Metadata.Label title="Layers" text={`${oncall.layers.length} ${oncall.layers.length === 1 ? "layer" : "layers"}`} />
+        {nextOncallUser && (
+          <Detail.Metadata.Label title="Next on-call" text={`${nextOncallUser.firstName} ${nextOncallUser.lastName}`} />
+        )}
+        <Detail.Metadata.Label
+          title="Members"
+          text={`${oncall.users.length} ${oncall.users.length === 1 ? "member" : "members"}`}
+        />
+        <Detail.Metadata.Label
+          title="Layers"
+          text={`${oncall.layers.length} ${oncall.layers.length === 1 ? "layer" : "layers"}`}
+        />
       </Detail.Metadata>
     );
   }, [activeShift, oncall]);
 
-  return <Detail markdown={createMarkdown()} metadata={metadata} />;
+  return <Detail navigationTitle={`${oncall ? oncall.name : "Oncall"}`} markdown={createMarkdown()} metadata={metadata} />;
 }
