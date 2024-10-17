@@ -58,9 +58,16 @@ const IncidentListItem = React.memo(function IncidentListItem({
     });
   }
 
+  let truncateLimit = 50;
+
+  if (accessories.length > 1) {
+    // means we have both priority and severity
+    truncateLimit = 40;
+  }
+
   return (
     <List.Item
-      title={truncate(incident.message, 50) || "Parsing failed"}
+      title={truncate(incident.message, truncateLimit) || "Parsing failed"}
       subtitle={incident.counterId}
       keywords={[incident.message, incident.counterId, incident.status]}
       accessories={[...accessories, { tag: tagProps[incident.status] }]}
