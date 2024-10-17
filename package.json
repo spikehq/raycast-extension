@@ -84,7 +84,7 @@
     "typescript": "^5.4.5"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production ray build --skip-types -e dist -o dist",
+    "build": "cross-env NODE_ENV=production ray build -e dist",
     "dev": "cross-env NODE_ENV=development ray develop",
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",

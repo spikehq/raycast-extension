@@ -21,14 +21,14 @@ export default function Command({ oncallId }: { oncallId: string }) {
     user: "",
     desc: "",
     startDate: moment().toDate(),
-    endDate: moment().add(1, 'day').toDate(),
+    endDate: moment().add(1, "day").toDate(),
   });
   const [users, setUsers] = useState<User[]>([]);
   const [oncalls, setOncalls] = useState<Oncall[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleInputChange = useCallback((key: string, value: any) => {
-    setFormState(prev => ({ ...prev, [key]: value }));
+  const handleInputChange = useCallback((key: string, value: Date | string) => {
+    setFormState((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const validateForm = useCallback(() => {
@@ -51,6 +51,8 @@ export default function Command({ oncallId }: { oncallId: string }) {
         desc,
         startDate: moment(startDate).format("DD/MM/YYYY HH:mm"),
         endDate: moment(endDate).format("DD/MM/YYYY HH:mm"),
+        startTime: moment(startDate).format("HH:mm"),
+        endTime: moment(endDate).format("HH:mm"),
       };
       await api.oncall.addOverride(data);
       await showToast({ style: Toast.Style.Success, title: "Override added" });
@@ -68,10 +70,7 @@ export default function Command({ oncallId }: { oncallId: string }) {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [oncallData, userData] = await Promise.all([
-          api.oncall.allOncalls(),
-          api.users.getTeamsUsers(),
-        ]);
+        const [oncallData, userData] = await Promise.all([api.oncall.allOncalls(), api.users.getTeamsUsers()]);
         setOncalls(oncallData.oncalls);
         setUsers(userData.users);
       } catch (error) {
@@ -126,19 +125,19 @@ export default function Command({ oncallId }: { oncallId: string }) {
         title="Description"
         placeholder="Description"
         value={formState.desc}
-        onChange={(value) => handleInputChange("desc", value)}
+        onChange={(value) => handleInputChange("desc", value || "")}
       />
       <Form.DatePicker
         id="startDate"
         title="Start date"
         value={formState.startDate}
-        onChange={(value) => handleInputChange("startDate", value)}
+        onChange={(value) => handleInputChange("startDate", value || "")}
       />
       <Form.DatePicker
         id="endDate"
         title="End date"
         value={formState.endDate}
-        onChange={(value) => handleInputChange("endDate", value)}
+        onChange={(value) => handleInputChange("endDate", value || "")}
       />
     </Form>
   );

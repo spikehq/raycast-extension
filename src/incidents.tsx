@@ -75,7 +75,7 @@ const IncidentListItem = React.memo(function IncidentListItem({
             shortcut={shortcuts.OPEN_IN_SPIKE}
             title="Open Incident in Spike"
             icon={Icon.Globe}
-            url={`${config?.spike}/incidents/${incident?.counterId}`}
+            url={`${config!.spike}/incidents/${incident?.counterId}`}
           />
           <Action
             shortcut={shortcuts.ACKNOWLEDGE_INCIDENT}
@@ -168,7 +168,7 @@ export default function Command() {
     pageSize: 20,
     hasMore: pagination && pagination.total > incidents.length ? true : false,
     onLoadMore: async () => {
-      const response = await api.incidents.getOpenIncidents(pagination?.currentPage + 1);
+      const response = await api.incidents.getOpenIncidents((pagination?.currentPage ?? 0) + 1);
       setPagination(response.pagination);
       setIncidents([...incidents, ...response.NACK_Incidents, ...response.ACK_Incidents]);
     },

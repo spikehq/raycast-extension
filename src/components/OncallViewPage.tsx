@@ -4,17 +4,36 @@ import api from "../api";
 import moment from "moment-timezone";
 
 interface Shift {
+  oncallName: string;
   id: string;
   title: string;
   start: string;
   end: string;
 }
 
+interface Oncall {
+  _id: string;
+  name: string;
+  users: object[];
+  layers: object[];
+}
+
+interface ActiveShift {
+  user: User;
+}
+
+interface User {
+  firstName: string;
+  lastName: string;
+  _id: string;
+  email: string;
+}
+
 export default function OncallViewPage({ oncallId }: { oncallId: string }) {
   const [spectrum, setSpectrum] = useState<Shift[]>([]);
-  const [oncall, setOncall] = useState<any | null>(null);
-  const [activeShift, setActiveShift] = useState<any | null>(null);
-  const [nextOncallUser, setNextOncallUser] = useState<any | null>(null);
+  const [oncall, setOncall] = useState<Oncall | null>(null);
+  const [activeShift, setActiveShift] = useState<ActiveShift | null>(null);
+  const [nextOncallUser, setNextOncallUser] = useState<User | null>(null);
 
   const shiftsDividedByDay = useMemo(() => {
     return spectrum.reduce((acc: Record<string, Shift[]>, shift) => {
@@ -85,15 +104,17 @@ ${shifts.map(createLayerMarkdown).join("\n")}
         )}
         <Detail.Metadata.Label
           title="Members"
-          text={`${oncall.users.length} ${oncall.users.length === 1 ? "member" : "members"}`}
+          text={`${oncall?.users.length ?? 0} ${oncall?.users.length === 1 ? "member" : "members"}`}
         />
         <Detail.Metadata.Label
           title="Layers"
-          text={`${oncall.layers.length} ${oncall.layers.length === 1 ? "layer" : "layers"}`}
+          text={`${oncall?.layers.length ?? 0} ${oncall?.layers.length === 1 ? "layer" : "layers"}`}
         />
       </Detail.Metadata>
     );
   }, [activeShift, oncall]);
 
-  return <Detail navigationTitle={`${oncall ? oncall.name : "Oncall"}`} markdown={createMarkdown()} metadata={metadata} />;
+  return (
+    <Detail navigationTitle={`${oncall ? oncall.name : "Oncall"}`} markdown={createMarkdown()} metadata={metadata} />
+  );
 }

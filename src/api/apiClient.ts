@@ -1,12 +1,18 @@
-import axios, { AxiosInstance, AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosError, AxiosResponse, AxiosRequestConfig } from "axios";
 import config from "../config";
 import * as auth from "../auth";
+
+interface ErrorResponse {
+  message: string;
+}
 
 export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public data?: any,
+    public config?: AxiosRequestConfig
   ) {
     super(message);
     this.name = "ApiError";
@@ -19,7 +25,7 @@ class ApiClient {
 
   private constructor() {
     this.axiosInstance = axios.create({
-      baseURL: config.api,
+      baseURL: config?.api,
       headers: {
         "Content-Type": "application/json",
       },
@@ -44,7 +50,7 @@ class ApiClient {
 
     this.axiosInstance.interceptors.response.use(
       this.handleSuccess,
-      this.handleError.bind(this), // Bind 'this' to maintain context
+      this.handleError.bind(this)
     );
   }
 
@@ -54,41 +60,29 @@ class ApiClient {
 
   private handleError = (error: AxiosError): Promise<never> => {
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       const apiError = new ApiError(
         error.response.status,
-        error.response.data.message || "An error occurred",
+        (error.response.data as ErrorResponse).message || "An error occurred",
         error.response.data,
+        error.config
       );
       return this.centralErrorHandler(apiError);
     } else if (error.request) {
-      // The request was made but no response was received
-      return this.centralErrorHandler(new ApiError(0, "No response received from server"));
+      return this.centralErrorHandler(new ApiError(0, "No response received from server", undefined, error.config));
     } else {
-      // Something happened in setting up the request that triggered an Error
-      return this.centralErrorHandler(new ApiError(0, error.message));
+      return this.centralErrorHandler(new ApiError(0, error.message, undefined, error.config));
     }
   };
 
   private centralErrorHandler = async (error: ApiError): Promise<never> => {
-    // Log the error
     console.error(`API Error ${error.status}: ${error.message}`, error.data);
 
-    // Here you can add centralized error handling logic
-    // For example, you could:
-    // - Send error to a logging service
-    // - Show a global notification to the user
-    // - Refresh the auth token if it's expired
-    // - Logout the user if the token is invalid
-
     if (error.status === 401) {
-      // Handle unauthorized error (e.g., logout user)
       auth.logout();
       await auth.authorize();
     }
-    // retry the request
-    return this.axiosInstance.request(error.config);
+    
+    return this.axiosInstance.request(error.config || {});
   };
 
   public static getInstance(): ApiClient {

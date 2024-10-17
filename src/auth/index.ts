@@ -1,5 +1,5 @@
 import { OAuth } from "@raycast/api";
-import { getUser } from "../api/users";
+import * as userApi from "../api/users";
 import config from "../config";
 const clientId = "81haf7j73410.c927aa87bagc";
 
@@ -18,7 +18,7 @@ export async function authorize(): Promise<void> {
   }
 
   const authRequest = await client.authorizationRequest({
-    endpoint: `${config.spike}/authorize`,
+    endpoint: `${config!.spike}/authorize`,
     clientId: clientId,
     scope: "",
   });
@@ -44,6 +44,7 @@ export async function getToken(): Promise<string> {
   return tokenSet && tokenSet.accessToken ? tokenSet.accessToken : "";
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getUser(): Promise<any> {
-  return await getUser();
+  return await userApi.getUser();
 }

@@ -15,8 +15,8 @@ interface Incident {
   resMetadata?: object;
   escalation: { _id: string; name: string };
   integration: { _id: string; customName: string };
-  history?: any[];
-  events?: any[];
+  history?: string[];
+  events?: string[];
   NACK_at: string;
   ACK_at?: string;
   RES_at?: string;

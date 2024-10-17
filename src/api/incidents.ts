@@ -68,7 +68,7 @@ export const getIncident = async (counterId: string) => {
   return response.data;
 };
 
-export const setPriority = async (counterIds: string, priority: string) => {
+export const setPriority = async (counterIds: string[], priority: string) => {
   const response = await apiClient.post("/incidents/priority/multi", {
     ids: counterIds,
     priority,
@@ -76,7 +76,7 @@ export const setPriority = async (counterIds: string, priority: string) => {
   return response.data;
 };
 
-export const setSeverity = async (counterIds: string, severity: string) => {
+export const setSeverity = async (counterIds: string[], severity: string) => {
   const response = await apiClient.post("/incidents/severity/multi", {
     ids: counterIds,
     severity,
@@ -84,10 +84,10 @@ export const setSeverity = async (counterIds: string, severity: string) => {
   return response.data;
 };
 
-export const removePriority = async (counterIds: string) => {
+export const removePriority = async (counterIds: string[]) => {
   const token = await auth.getToken();
   const options = {
-    url: `${config.api}/incidents/priority/remove/multi`,
+    url: `${config!.api}/incidents/priority/remove/multi`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -102,10 +102,10 @@ export const removePriority = async (counterIds: string) => {
   return response.data;
 };
 
-export const removeSeverity = async (counterIds: string) => {
+export const removeSeverity = async (counterIds: string[]) => {
   const token = await auth.getToken();
   const options = {
-    url: `${config.api}/incidents/severity/remove/multi`,
+    url: `${config!.api}/incidents/severity/remove/multi`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

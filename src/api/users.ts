@@ -14,7 +14,7 @@ export const getFavorites = async () => {
 export const getUser = async () => {
   const user = await LocalStorage.getItem("user");
   if (user) {
-    return JSON.parse(user);
+    return JSON.parse(user as string);
   } else {
     const response = await apiClient.get("/users/me");
     LocalStorage.setItem("user", JSON.stringify(response.data));
@@ -23,7 +23,7 @@ export const getUser = async () => {
 };
 
 export const getTeamsUsers = async () => {
-  const response = await apiClient.get("/orgs/team/members")
+  const response = await apiClient.get("/orgs/team/members");
   return response.data;
 };
 

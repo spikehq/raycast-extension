@@ -1,14 +1,19 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { List, Icon, showToast, Toast, ActionPanel, Action } from "@raycast/api";
 import api from "./api";
 import OncallViewPage from "./components/OncallViewPage";
 import AddOverride from "./addOverride";
 import shortcut from "./config/shortcut";
 
-const WhoIsOncall = () => {
-  const [activeShifts, setActiveShifts] = useState([]);
+interface Shift {
+  _id: string;
+  name: string;
+}
+
+const WhoIsOncall: React.FC = () => {
+  const [activeShifts, setActiveShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const fetchActiveSchedules = useCallback(async () => {
     try {
@@ -16,11 +21,12 @@ const WhoIsOncall = () => {
       const data = await api.oncall.getActiveSchedules();
       setActiveShifts(data);
     } catch (err) {
-      setError(err);
+      const error = err instanceof Error ? err : new Error("An unknown error occurred");
+      setError(error);
       await showToast({
         style: Toast.Style.Failure,
         title: "Failed to fetch on-call schedules",
-        message: err.message,
+        message: error.message,
       });
     } finally {
       setIsLoading(false);
@@ -31,34 +37,18 @@ const WhoIsOncall = () => {
     fetchActiveSchedules();
   }, [fetchActiveSchedules]);
 
-  const RenderShiftItem = useCallback(
+  const RenderShiftItem: React.FC<{ item: Shift }> = useCallback(
     ({ item: shift }) => (
       <List.Item
-        icon={{
-          source: shift.user.profile?.avatar
-            ? `${shift.user.profile.baseUrl}${shift.user.profile.avatar}`
-            : Icon.Person,
-        }}
-        title={`${shift.user.firstName} ${shift.user.lastName}`}
-        subtitle={shift.user.email}
-        accessories={[{ text: shift.oncall.name || "Unknown" }]}
-        keywords={[
-          `${shift.user.firstName} ${shift.user.lastName}` || "",
-          shift.user.email || "",
-          shift.oncall.name || "",
-        ]}
+        title={shift.name}
         actions={
           <ActionPanel>
+            <Action.Push title="View Details" target={<OncallViewPage oncallId={shift._id} />} icon={Icon.Eye} />
             <Action.Push
-              title="Show Details"
-              icon={Icon.Info}
-              target={<OncallViewPage oncallId={shift.oncall._id} />}
-            />
-            <Action.Push
-              shortcut={shortcut.ADD_OVERRIDE}
               title="Add Override"
-              icon={Icon.Person}
-              target={<AddOverride oncallId={shift.oncall._id} />}
+              target={<AddOverride oncallId={shift._id} />}
+              icon={Icon.Plus}
+              shortcut={shortcut.ADD_OVERRIDE}
             />
           </ActionPanel>
         }
@@ -68,20 +58,14 @@ const WhoIsOncall = () => {
   );
 
   if (error) {
-    return <List.EmptyView icon={Icon.XmarkCircle} title="Error" description={error.message} />;
+    return <List.EmptyView title="Error" description={error.message} />;
   }
 
   return (
-    <List
-      navigationTitle="Current Active On-Call Members"
-      searchBarPlaceholder="Search by on-call name"
-      isLoading={isLoading}
-    >
-      <List.Section title="Current Active On-Call Members">
-        {activeShifts.map((shift, index) => (
-          <RenderShiftItem key={index} item={shift} />
-        ))}
-      </List.Section>
+    <List isLoading={isLoading} searchBarPlaceholder="Search schedules...">
+      {activeShifts.map((shift) => (
+        <RenderShiftItem key={shift._id} item={shift} />
+      ))}
     </List>
   );
 };
