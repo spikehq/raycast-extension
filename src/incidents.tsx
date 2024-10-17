@@ -79,7 +79,6 @@ const IncidentListItem = React.memo(function IncidentListItem({
             target={<IncidentDetailsView counterId={incident.counterId} />}
           />
           <Action.OpenInBrowser
-            shortcut={shortcuts.OPEN_IN_SPIKE}
             title="Open Incident in Spike"
             icon={Icon.Globe}
             url={`${config!.spike}/incidents/${incident?.counterId}`}
