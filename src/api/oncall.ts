@@ -1,5 +1,4 @@
 import apiClient from "./apiClient";
-import { getUser } from "./users";
 
 interface OncallOverride {
   user: string;

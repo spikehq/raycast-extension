@@ -2,6 +2,8 @@ import { Action, ActionPanel, Color, Detail, Icon, showToast, Toast } from "@ray
 import { useEffect, useState, useMemo, useCallback } from "react";
 import api from "../api";
 import moment from "moment-timezone";
+import shortcut from "../config/shortcut";
+import config from "../config";
 
 interface Incident {
   _id: string;
@@ -186,12 +188,12 @@ ${JSON.stringify(incident.resMetadata, null, 2)}
 
         <Detail.Metadata.Link
           title="Escalation"
-          target={`https://app.spike.sh/escalations/${incident.escalation._id}`}
+          target={`${config?.spike}/escalations/${incident.escalation._id}`}
           text={incident.escalation.name}
         />
         <Detail.Metadata.Link
           title="Integration"
-          target={`https://app.spike.sh/integrations/${incident.integration._id}`}
+          target={`${config?.spike}/integrations/${incident.integration._id}`}
           text={incident.integration.customName}
         />
 
@@ -225,19 +227,14 @@ ${JSON.stringify(incident.resMetadata, null, 2)}
     if (!incident) return null;
     return (
       <ActionPanel>
-        <Action.OpenInBrowser title="Open in Spike" url={`https://app.spike.sh/incidents/${incident.counterId}`} />
+        <Action.OpenInBrowser title="Open in Spike" url={`${config?.spike}/incidents/${incident.counterId}`} />
         <Action
-          shortcut={{ modifiers: ["cmd", "shift"], key: "a" }}
+          shortcut={shortcut.ACKNOWLEDGE_INCIDENT}
           title="Acknowledge"
           icon={Icon.Circle}
           onAction={acknowledgeIncident}
         />
-        <Action
-          shortcut={{ modifiers: ["cmd", "shift"], key: "r" }}
-          title="Resolve"
-          icon={Icon.Checkmark}
-          onAction={resolveIncident}
-        />
+        <Action shortcut={shortcut.RESOLVE_INCIDENT} title="Resolve" icon={Icon.Checkmark} onAction={resolveIncident} />
         <ActionPanel.Submenu icon={{ source: getIcon("sev2.png") }} title="Change Severity">
           {severities.map((severity) => (
             <Action

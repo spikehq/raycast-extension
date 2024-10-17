@@ -3,6 +3,8 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import api from "./api";
 import React from "react";
 import IncidentDetailsView from "./components/IncidentViewPage";
+import shortcuts from "./config/shortcut";
+import config from "./config";
 
 interface Incident {
   _id: string;
@@ -11,6 +13,15 @@ interface Incident {
   counterId: string;
   counter: string;
   status: "NACK" | "ACK" | "RES";
+  groupedIncident: {
+    priority?: string;
+    severity?: string;
+  };
+}
+
+interface Pagination {
+  currentPage: number;
+  total: number;
 }
 
 const tagProps: Record<Incident["status"], { value: string; color: Color }> = {
@@ -31,7 +42,7 @@ const IncidentListItem = React.memo(function IncidentListItem({
   onResolve: (incident: Incident) => Promise<void>;
 }) {
   const accessories = [];
-  if (incident && incident.groupedIncident && incident.groupedIncident.priority) {
+  if (incident?.groupedIncident?.priority) {
     accessories.push({
       icon: { source: getIcon(`${incident.groupedIncident.priority}.png`) },
       tooltip: incident.groupedIncident.priority.toUpperCase(),
@@ -39,7 +50,7 @@ const IncidentListItem = React.memo(function IncidentListItem({
     });
   }
 
-  if (incident && incident.groupedIncident && incident.groupedIncident.severity) {
+  if (incident?.groupedIncident?.severity) {
     accessories.push({
       icon: { source: getIcon(`${incident.groupedIncident.severity}.png`) },
       tooltip: incident.groupedIncident.severity.toUpperCase(),
@@ -51,11 +62,7 @@ const IncidentListItem = React.memo(function IncidentListItem({
     <List.Item
       title={truncate(incident.message, 50) || "Parsing failed"}
       subtitle={incident.counterId}
-      keywords={[
-        incident.message,
-        incident.counterId,
-        incident.status,
-      ]}
+      keywords={[incident.message, incident.counterId, incident.status]}
       accessories={[...accessories, { tag: tagProps[incident.status] }]}
       actions={
         <ActionPanel>
@@ -64,19 +71,24 @@ const IncidentListItem = React.memo(function IncidentListItem({
             icon={Icon.Info}
             target={<IncidentDetailsView counterId={incident.counterId} />}
           />
+          <Action.OpenInBrowser
+            shortcut={shortcuts.OPEN_IN_SPIKE}
+            title="Open Incident in Spike"
+            icon={Icon.Globe}
+            url={`${config?.spike}/incidents/${incident?.counterId}`}
+          />
           <Action
-            shortcut={{ modifiers: ["cmd", "shift"], key: "a" }}
+            shortcut={shortcuts.ACKNOWLEDGE_INCIDENT}
             title="Acknowledge"
             icon={Icon.Circle}
             onAction={() => onAcknowledge(incident)}
           />
           <Action
-            shortcut={{ modifiers: ["cmd", "shift"], key: "r" }}
+            shortcut={shortcuts.RESOLVE_INCIDENT}
             title="Resolve"
             icon={Icon.Checkmark}
             onAction={() => onResolve(incident)}
           />
-          <Action.OpenInBrowser title="Open Incident" url={`https://app.spike.sh/incidents/${incident.counterId}`} />
         </ActionPanel>
       }
     />
@@ -86,7 +98,7 @@ const IncidentListItem = React.memo(function IncidentListItem({
 export default function Command() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [pagination, setPagination] = useState(null);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchIncidents = useCallback(async () => {
@@ -156,7 +168,7 @@ export default function Command() {
     pageSize: 20,
     hasMore: pagination && pagination.total > incidents.length ? true : false,
     onLoadMore: async () => {
-      const response = await api.incidents.getOpenIncidents(pagination.currentPage + 1);
+      const response = await api.incidents.getOpenIncidents(pagination?.currentPage + 1);
       setPagination(response.pagination);
       setIncidents([...incidents, ...response.NACK_Incidents, ...response.ACK_Incidents]);
     },
@@ -166,7 +178,7 @@ export default function Command() {
     <List
       pagination={incidentPagination}
       isLoading={isLoading}
-      navigationTitle={`Open Incidents (${pagination.total})`}
+      navigationTitle={`Open Incidents (${pagination?.total})`}
       searchBarPlaceholder="Search among open incidents..."
     >
       {triggeredIncidents.length > 0 && (

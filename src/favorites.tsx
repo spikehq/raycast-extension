@@ -1,6 +1,7 @@
 import { ActionPanel, List, Action, Icon } from "@raycast/api";
 import { useEffect, useState, useMemo } from "react";
 import api from "./api";
+import config from "./config";
 
 interface Favorite {
   entityId: string;
@@ -34,7 +35,7 @@ function FavoriteItem({ favorite }: { favorite: Favorite }) {
       icon={getIcon(favorite.entityType)}
       actions={
         <ActionPanel>
-          <Action.OpenInBrowser title="Open favorite" url={`https://app.spike.sh${favorite.url}`} />
+          <Action.OpenInBrowser icon={Icon.Globe} title="Open Favorite" url={`${config?.spike}${favorite.url}`} />
         </ActionPanel>
       }
     />

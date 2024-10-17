@@ -4,6 +4,7 @@ import api from "./api";
 import OncallViewPage from "./components/OncallViewPage";
 import AddOverride from "./addOverride";
 import moment from "moment-timezone";
+import shortcut from "./config/shortcut";
 
 interface Oncall {
   _id: string;
@@ -85,7 +86,12 @@ const MyOncalls = () => {
           actions={
             <ActionPanel>
               <Action.Push title="Show Details" icon={Icon.Info} target={<OncallViewPage oncallId={oncall._id} />} />
-              <Action.Push title="Add Override" icon={Icon.Person} target={<AddOverride oncallId={oncall._id} />} />
+              <Action.Push
+                title="Add Override"
+                shortcut={shortcut.ADD_OVERRIDE}
+                icon={Icon.Person}
+                target={<AddOverride oncallId={oncall._id} />}
+              />
             </ActionPanel>
           }
         />

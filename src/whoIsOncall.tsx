@@ -3,6 +3,7 @@ import { List, Icon, showToast, Toast, ActionPanel, Action } from "@raycast/api"
 import api from "./api";
 import OncallViewPage from "./components/OncallViewPage";
 import AddOverride from "./addOverride";
+import shortcut from "./config/shortcut";
 
 const WhoIsOncall = () => {
   const [activeShifts, setActiveShifts] = useState([]);
@@ -53,7 +54,12 @@ const WhoIsOncall = () => {
               icon={Icon.Info}
               target={<OncallViewPage oncallId={shift.oncall._id} />}
             />
-            <Action.Push title="Add Override" icon={Icon.Person} target={<AddOverride oncallId={shift.oncall._id} />} />
+            <Action.Push
+              shortcut={shortcut.ADD_OVERRIDE}
+              title="Add Override"
+              icon={Icon.Person}
+              target={<AddOverride oncallId={shift.oncall._id} />}
+            />
           </ActionPanel>
         }
       />
@@ -66,7 +72,11 @@ const WhoIsOncall = () => {
   }
 
   return (
-    <List navigationTitle="Current Active On-Call Members" searchBarPlaceholder="Search user..." isLoading={isLoading}>
+    <List
+      navigationTitle="Current Active On-Call Members"
+      searchBarPlaceholder="Search by on-call name"
+      isLoading={isLoading}
+    >
       <List.Section title="Current Active On-Call Members">
         {activeShifts.map((shift, index) => (
           <RenderShiftItem key={index} item={shift} />

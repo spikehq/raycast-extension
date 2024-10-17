@@ -1,20 +1,34 @@
 import { MenuBarExtra, open } from "@raycast/api";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "./api";
+import config from "./config";
+
+interface Incident {
+  counterId: string;
+  message: string;
+  status: "NACK" | "ACK" | "RES";
+}
+
+interface ActiveOncall {
+  isCurrentlyOncall: boolean;
+}
 
 export default function Command() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [activeOncall, setActiveOncall] = useState<ActiveOncall | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchIncidents = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await api.incidents.getOpenIncidents(1, 20);
+      const oncall = await api.oncall.amIOncall();
+      setActiveOncall(oncall.oncallData);
+
+      // activeOncall && activeOncall.isCurrentlyOncall
       setIncidents([...response.NACK_Incidents, ...response.ACK_Incidents]);
     } catch (err) {
       console.error("Error fetching incidents:", err);
-      setError("Failed to fetch incidents. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -27,31 +41,46 @@ export default function Command() {
   const triggeredIncidents = useMemo(() => incidents.filter((i) => i.status === "NACK"), [incidents]);
   const acknowledgedIncidents = useMemo(() => incidents.filter((i) => i.status === "ACK"), [incidents]);
 
-  const truncate = (str: string, n: number) => str && str.length > n ? str.substring(0, n - 1) + "..." : str;
+  const truncate = (str: string, n: number) => (str && str.length > n ? str.substring(0, n - 1) + "..." : str);
 
   return (
-    <MenuBarExtra icon={"spike-logo-white.png"} tooltip="Open incidents">
-      <MenuBarExtra.Item title="Triggered" />
-
-      {triggeredIncidents.map((incident, index) => (
-        <MenuBarExtra.Item
-          key={index}
-          title={`[${incident.counterId}] ${truncate(incident.message, 50)}` || `[${incident.counterId}] Parsing failed`}
-          onAction={() => {
-            open("https://app.spike.sh/incidents/" + incident.counterId);
-          }}
-        />
-      ))}
-      <MenuBarExtra.Item title="Acknowledged" />
-      {acknowledgedIncidents.map((incident, index) => (
-        <MenuBarExtra.Item
-          key={index}
-          title={`[${incident.counterId}] ${truncate(incident.message, 50)}` || `[${incident.counterId}] Parsing failed`}
-          onAction={() => {
-            open("https://app.spike.sh/incidents/" + incident.counterId);
-          }}
-        />
-      ))}
+    <MenuBarExtra isLoading={isLoading} icon={"spike-logo-white.png"} tooltip="Open incidents">
+      <MenuBarExtra.Item
+        icon={{
+          source: activeOncall && activeOncall.isCurrentlyOncall ? "green-dot.png" : "gray-dot.png",
+        }}
+        title={activeOncall && activeOncall.isCurrentlyOncall ? "You are on-call" : "You are not on-call"}
+        onAction={() => {
+          open(`${config?.spike}/on-calls?includes=me`);
+        }}
+      />
+      <MenuBarExtra.Separator />
+      <MenuBarExtra.Section title={`Triggered (${triggeredIncidents.length})`}>
+        {triggeredIncidents.map((incident, index) => (
+          <MenuBarExtra.Item
+            key={index}
+            title={
+              `[${incident.counterId}] ${truncate(incident.message, 35)}` || `[${incident.counterId}] Parsing failed`
+            }
+            onAction={() => {
+              open(`${config?.spike}/incidents/${incident.counterId}`);
+            }}
+          />
+        ))}
+      </MenuBarExtra.Section>
+      <MenuBarExtra.Section title={`Acknowledged (${acknowledgedIncidents.length})`}>
+        {acknowledgedIncidents.map((incident, index) => (
+          <MenuBarExtra.Item
+            key={index}
+            title={
+              `[${incident.counterId}] ${truncate(incident.message, 35)}` || `[${incident.counterId}] Parsing failed`
+            }
+            onAction={() => {
+              open(`${config?.spike}/incidents/${incident.counterId}`);
+            }}
+          />
+        ))}
+      </MenuBarExtra.Section>
     </MenuBarExtra>
   );
 }
