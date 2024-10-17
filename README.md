@@ -1,10 +1,36 @@
-# Spike Raycast Extension
+<div align="center">
+  <img
+    src="https://github.com/spikehq/raycast-extension/blob/main/assets/spike-full-logo.png"
+    width="150"
+  />
 
-![Extension](./assets/README.png)
+  <h1>
+    Spike on Raycast
+  </h1>
+
+Respond to incidents, check on-call, add overrides faster with Raycast.
+
+  <p>
+    <a href="https://www.raycast.com/spike/spike">
+      <img src="https://img.shields.io/badge/Raycast-Store-red.svg"
+        alt="Find this extension on the Raycast store"
+      />
+    </a>
+    <img
+      src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
+      alt="PRs welcome!"
+    />
+    <a href="https://twitter.com/intent/follow?screen_name=SpikedHQ">
+      <img alt="X (formerly Twitter) Follow" src="https://img.shields.io/twitter/follow/SpikedHQ">
+    </a>
+  </p>
+</div>
 
 ## Overview
 
 Spike's Raycast extension brings incident management and on-call functionalities directly into operating system. This extension allows you to manage incidents, view on-call schedules, add on-call overrides, and access your favorites without leaving your workflow.
+
+![Extension](./assets/README.png)
 
 ## Features
 
