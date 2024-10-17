@@ -40,12 +40,6 @@
       ]
     },
     {
-      "name": "favorites",
-      "title": "Favorites",
-      "description": "Quickly access your favorites",
-      "mode": "view"
-    },
-    {
       "name": "whoIsOnCall",
       "title": "Who is Oncall",
       "description": "Lists every active on-call member",
@@ -59,7 +53,7 @@
     },
     {
       "name": "addOverride",
-      "title": "Add Oncall override",
+      "title": "Add Oncall Override",
       "description": "Add override on any on-call schedule",
       "mode": "view"
     },
