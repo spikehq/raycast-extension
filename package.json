@@ -5,9 +5,13 @@
   "description": "",
   "icon": "spike-logo.png",
   "author": "damanpreet_singh",
-  "owner": "spike.sh",
+  "owner": "Spike.sh",
   "categories": [
     "Developer Tools"
+  ],
+  "contributors": [
+    "damanpreet_singh",
+    "kaushik_from_spike_sh"
   ],
   "license": "MIT",
   "commands": [
