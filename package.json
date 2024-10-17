@@ -6,11 +6,11 @@
   "icon": "spike-logo.png",
   "author": "damanpreet_singh",
   "owner": "spike.sh",
+  "access": "public",
   "categories": [
     "Developer Tools"
   ],
   "contributors": [
-    "damanpreet_singh",
     "kaushik_from_spike_sh"
   ],
   "license": "MIT",
@@ -50,6 +50,12 @@
         "on-call",
         "rotation"
       ]
+    },
+    {
+      "name": "favorites",
+      "title": "Favorites",
+      "description": "Quickly access your favorites",
+      "mode": "view"
     },
     {
       "name": "addOverride",
