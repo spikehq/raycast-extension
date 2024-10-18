@@ -45,7 +45,7 @@ export const acknowledgeIncident = async (incident: Incident) => {
   const user = await getUser();
   const data = {
     ids: [incident._id],
-    userId: user._id,
+    user: user._id,
     orgId: user.org,
   };
   const response = await apiClient.post("/incidents/acknowledge/multi", data);
@@ -56,7 +56,7 @@ export const resolveIncident = async (incident: Incident) => {
   const user = await getUser();
   const data = {
     ids: [incident._id],
-    userId: user._id,
+    user: user._id,
     orgId: user.org,
   };
   const response = await apiClient.post("/incidents/resolve/multi", data);

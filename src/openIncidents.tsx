@@ -54,7 +54,6 @@ export default function Command() {
           open(`${config?.spike}/on-calls?includes=me`);
         }}
       />
-      <MenuBarExtra.Separator />
       <MenuBarExtra.Section title={`Triggered (${triggeredIncidents.length})`}>
         {triggeredIncidents.map((incident, index) => (
           <MenuBarExtra.Item
@@ -68,18 +67,29 @@ export default function Command() {
           />
         ))}
       </MenuBarExtra.Section>
-      <MenuBarExtra.Section title={`Acknowledged (${acknowledgedIncidents.length})`}>
-        {acknowledgedIncidents.map((incident, index) => (
-          <MenuBarExtra.Item
-            key={index}
-            title={
-              `[${incident.counterId}] ${truncate(incident.message, 35)}` || `[${incident.counterId}] Parsing failed`
-            }
-            onAction={() => {
-              open(`${config?.spike}/incidents/${incident.counterId}`);
-            }}
-          />
-        ))}
+      <MenuBarExtra.Item title={`Acknowledged (${acknowledgedIncidents.length})`} />
+      {acknowledgedIncidents.map((incident, index) => (
+        <MenuBarExtra.Item
+          key={index}
+          title={
+            `[${incident.counterId}] ${truncate(incident.message, 35)}` || `[${incident.counterId}] Parsing failed`
+          }
+          onAction={() => {
+            open(`${config?.spike}/incidents/${incident.counterId}`);
+          }}
+        />
+      ))}
+      <MenuBarExtra.Section>
+        <MenuBarExtra.Item
+          icon={{
+            source: "spike-logo-white.png",
+          }}
+          title="Open Dashboard"
+          shortcut={{ modifiers: ["cmd"], key: "o" }}
+          onAction={() => {
+            open(`${config?.spike}`);
+          }}
+        />
       </MenuBarExtra.Section>
     </MenuBarExtra>
   );
