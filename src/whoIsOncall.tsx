@@ -4,6 +4,7 @@ import api from "./api";
 import OncallViewPage from "./components/OncallViewPage";
 import AddOverride from "./addOverride";
 import shortcut from "./config/shortcut";
+import config from "./config";
 
 interface Shift {
   _id: string;
@@ -73,6 +74,11 @@ const WhoIsOncall = () => {
               title="Show Details"
               icon={Icon.Info}
               target={<OncallViewPage oncallId={shift.oncall._id} />}
+            />
+            <Action.Open
+              icon={Icon.Globe}
+              title="Open in Spike"
+              target={`${config!.spike}/on-calls/${shift.oncall._id}`}
             />
             <Action.Push
               shortcut={shortcut.ADD_OVERRIDE}

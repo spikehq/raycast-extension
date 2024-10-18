@@ -5,6 +5,7 @@ import OncallViewPage from "./components/OncallViewPage";
 import AddOverride from "./addOverride";
 import moment from "moment-timezone";
 import shortcut from "./config/shortcut";
+import config from "./config";
 
 interface Oncall {
   _id: string;
@@ -97,6 +98,7 @@ const MyOncalls = () => {
           actions={
             <ActionPanel>
               <Action.Push title="Show Details" icon={Icon.Info} target={<OncallViewPage oncallId={oncall._id} />} />
+              <Action.Open icon={Icon.Globe} title="Open in Spike" target={`${config!.spike}/on-calls/${oncall._id}`} />
               <Action.Push
                 title="Add Override"
                 shortcut={shortcut.ADD_OVERRIDE}

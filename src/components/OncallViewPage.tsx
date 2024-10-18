@@ -1,7 +1,8 @@
-import { Color, Detail } from "@raycast/api";
+import { Action, ActionPanel, Color, Detail, Icon } from "@raycast/api";
 import { useEffect, useState, useMemo } from "react";
 import api from "../api";
 import moment from "moment-timezone";
+import config from "../config";
 
 interface Shift {
   oncallName: string;
@@ -115,6 +116,15 @@ ${shifts.map(createLayerMarkdown).join("\n")}
   }, [activeShift, oncall]);
 
   return (
-    <Detail navigationTitle={`${oncall ? oncall.name : "Oncall"}`} markdown={createMarkdown()} metadata={metadata} />
+    <Detail
+      navigationTitle={`${oncall ? oncall.name : "Oncall"}`}
+      markdown={createMarkdown()}
+      metadata={metadata}
+      actions={
+        <ActionPanel>
+          <Action.Open icon={Icon.Globe} title="Open in Spike" target={`${config!.spike}/on-calls/${oncallId}`} />
+        </ActionPanel>
+      }
+    />
   );
 }
