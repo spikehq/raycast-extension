@@ -136,7 +136,7 @@ export default function Command() {
         optimisticUpdate(currentData: Incident[] | undefined) {
           if (!currentData) return [];
           // Proceed with the rest of the function
-          if (newStatus === "ACK") {
+          if (newStatus === "RES") {
             return currentData.filter((item) => item._id !== incident._id);
           }
           return currentData.map((item) => (item._id === incident._id ? { ...item, status: newStatus } : item));
