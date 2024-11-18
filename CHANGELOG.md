@@ -1,6 +1,6 @@
 # Spike Changelog
 
-## [Fixes & Bits] - {PR_MERGE_DATE}
+## [BUG fixes] - {PR_MERGE_DATE}
 
 - Fixed TypeError in `Who is oncall` command by adding proper null checks for oncall user profiles and metadata
 - Update Readme
